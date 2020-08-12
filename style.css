@@ -9,6 +9,6 @@ html, body{
 canvas {
     background-color: darkgreen;
     image-rendering: pixelated;
-    image-rendering: crisp-edges;
+    //image-rendering: crisp-edges;
 }
 

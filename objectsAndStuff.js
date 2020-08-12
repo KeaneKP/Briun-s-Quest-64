@@ -1,5 +1,5 @@
 
-function player(){
+function player() {
     this.x = 10;
     this.y = 10;
     this.dx = 0;
@@ -7,21 +7,23 @@ function player(){
     this.player = true;
     this.dy = 0;
     this.jumpImage = new Image();
-    this.jumpImage.src = "BriunDown.png";
+    this.jumpImage.src = "assets/BriunDown.png";
     this.image = new Image();
-    this.image.src = "Briun.png";
-    this.draw = function(){
+    this.image.src = "assets/Briun.png";
+    this.stamina = 1;
+    this.draw = () => {
         let screenCoords = getScreenCoords(this);
         ctx.drawImage((this.dy >= -1) ? this.jumpImage : this.image, screenCoords.x, screenCoords.y);
     }
     this.jump = (y, x, particles) => {
-        this.dy = -1.5 * y;
-        this.dx = -1.5 * x;
+        this.dy = -2 * y * this.stamina;
+        this.dx = -2 * x * this.stamina;
         if (particles) {
-            objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, 'white'));
-            objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, 'white'));
-            objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, 'white'));
-            objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, 'white'));
+            objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
+            objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
+            objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
+            objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
+            this.stamina -= 0.025;
         }
     } 
     this.update = () => {
@@ -45,12 +47,44 @@ function player(){
         }
     }
 }
+function hotdog(x, y) {
+    this.x = x;
+    this.y = y;
+    this.image = new Image();
+    this.image.src = "assets/Hotdog.png";
+    this.update = () => {
+        if (Math.abs(this.x - playerObject.x) < 100 && Math.abs(this.y - playerObject.y) < 100) {
+           if (playerObject.y + playerObject.image.naturalHeight >= this.y - 1 && playerObject.y <= this.y + this.image.naturalHeight && playerObject.x + playerObject.image.naturalWidth >= this.x && playerObject.x <= this.x + this.image.naturalWidth) {
+               playerObject.stamina = 1;
+               this.dead = true;
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y +       playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y +       playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y +       playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+               objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, "#e0a709"));
+           }
+           
+        } 
+    }
+    this.draw = () => {
+        let screenCoords = getScreenCoords(this);
+        ctx.drawImage(this.image, screenCoords.x, screenCoords.y);
+    }
+}
 function particle(x, y, color){
     this.x = x;
     this.y = y;
     this.dead = false;
     this.dy = Math.random() - 1;
     this.dx = Math.random() * 3 - 1.5;
+    this.color = color;
     setTimeout(() => {
         this.dead = true; 
     }, 1200);
@@ -60,15 +94,23 @@ function particle(x, y, color){
         this.dy += gravity;
     }
     this.draw = () => {
-        ctx.fillStyle = this.color;
         let screenCoords = getScreenCoords(this)
+        ctx.beginPath()
+        ctx.fillStyle = this.color;
         ctx.fillRect(screenCoords.x, screenCoords.y, 1, 1);
+        ctx.fillRect(screenCoords.x, screenCoords.y, 1, 1);
+        ctx.fillRect(screenCoords.x, screenCoords.y, 1, 1);
+        ctx.closePath();
     }
 }
 function platform(x, y, w) {
     this.x = x;
     this.y = y;
     this.w = w;
+    let random = Math.random();
+    if (this.w >= 9 && random <= 0.35) {
+        objects.push(new hotdog(Math.floor(this.x + this.w / 2 - 4.5), this.y - 6))
+    }
     this.update = () => {
         if (Math.abs(this.x - playerObject.x) < 100 && Math.abs(this.y - playerObject.y) < 100) {
            if (playerObject.y + playerObject.image.naturalHeight >= this.y - 1 && playerObject.y + playerObject.image.naturalHeight - 3 <= this.y + 1 && playerObject.x + playerObject.image.naturalWidth >= this.x && playerObject.x <= this.x + this.w ) {
@@ -103,9 +145,10 @@ function platform(x, y, w) {
         ctx.fillRect(screenCoords.x + w + 2, screenCoords.y + 3, 1, 1);
         ctx.fillRect(screenCoords.x + w + 1, screenCoords.y + 2, 1, 1);
         ctx.fillStyle = "#f56c6c";
+        
         ctx.fillRect(screenCoords.x + 2, screenCoords.y + 1, w - 3, 3);
         ctx.fillRect(screenCoords.x + 1, screenCoords.y + 2, 1, 1);
-        ctx.fillRect(screenCoords.x + w - 1, screenCoords.y + 2, 1, 1);
+        ctx.fillRect(screenCoords.x + w - 1, screenCoords.y + 2, 1, 1); 
     }
 }
 let objects = [];
