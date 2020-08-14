@@ -17,8 +17,8 @@ function player() {
     }
     this.jump = (y, x, particles) => {
         this.dy = -2 * y * this.stamina;
-        this.dx = -2 * x * this.stamina;
-        if (particles) {
+        this.dx = -2 * x;
+        if (particles && this.stamina > 0) {
             objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
             objects.push(new particle(playerObject.x + playerObject.image.naturalWidth, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
             objects.push(new particle(playerObject.x, playerObject.y + playerObject.image.naturalHeight, '#f56c6c'));
@@ -74,8 +74,10 @@ function hotdog(x, y) {
         } 
     }
     this.draw = () => {
-        let screenCoords = getScreenCoords(this);
-        ctx.drawImage(this.image, screenCoords.x, screenCoords.y);
+        if (Math.abs(this.x - playerObject.x) < 100 && Math.abs(this.y - playerObject.y) < 100) {
+            let screenCoords = getScreenCoords(this);
+            ctx.drawImage(this.image, screenCoords.x, screenCoords.y);
+        }
     }
 }
 function particle(x, y, color){
@@ -128,6 +130,7 @@ function platform(x, y, w) {
         }
     }
     this.draw  = () => {
+        if (Math.abs(this.x - playerObject.x) < 100 && Math.abs(this.y - playerObject.y) < 100) {
         let screenCoords = getScreenCoords(this);
         ctx.fillStyle = "#c22727";
         ctx.fillRect(screenCoords.x - 2, screenCoords.y + 1, 1, 1);
@@ -149,6 +152,7 @@ function platform(x, y, w) {
         ctx.fillRect(screenCoords.x + 2, screenCoords.y + 1, w - 3, 3);
         ctx.fillRect(screenCoords.x + 1, screenCoords.y + 2, 1, 1);
         ctx.fillRect(screenCoords.x + w - 1, screenCoords.y + 2, 1, 1); 
+        }
     }
 }
 let objects = [];

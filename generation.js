@@ -1,4 +1,5 @@
 let chunks = {}
+let chunksArray = [];
 const getChunk = coords => {
     let x = Math.floor(coords.x/50).toString();
     let y = Math.floor(coords.y/50).toString();
@@ -11,9 +12,10 @@ const getChunk = coords => {
         chunks[y][x] = {
             x: x,
             y: y,
-            platform: new platform(Math.floor(Math.random() * 48) + 50*x, Math.floor(Math.random() * 48 - width) + 50 * y, width)
+            platform: new platform(Math.floor(Math.random() * (49 - width)) + 50*x, Math.floor(Math.random() * 48) + 50 * y, width)
         }
-        objects.push(chunks[y][x].platform)
+        objects.push(chunks[y][x].platform);
+        chunksArray.push(chunks[y][x]);
     }
     return {
         chunk: chunks[y][x],
